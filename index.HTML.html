@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aser's Complete Banking System</title>
+    <style>
+        :root {
+            --primary: #2a52be;
+            --danger: #cc0000;
+            --success: #28a745;
+            --warning: #ffc107;
+            --light: #f8f9fa;
+            --dark: #343a40;
+        }
+        
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        
+        h1, h2, h3 {
+            color: var(--primary);
+            margin-top: 0;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        
+        button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            width: 100%;
+            margin-top: 5px;
+        }
+        
+        button.danger {
+            background-color: var(--danger);
+        }
+        
+        button.success {
+            background-color: var(--success);
+        }
+        
+        .balance {
+            font-size: 2rem;
+            text-align: center;
+            margin: 20px 0;
+            font-weight: bold;
+            color: var(--primary);
+        }
+        
+        .transaction {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .transaction-deposit {
+            border-left: 4px solid var(--success);
+            padding-left: 11px;
+        }
+        
+        .transaction-withdrawal {
+            border-left: 4px solid var(--danger);
+            padding-left: 11px;
+        }
+        
+        .transaction-transfer {
+            border-left: 4px solid var(--warning);
+            padding-left: 11px;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .alert {
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .alert-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .nav-tabs {
+            display: flex;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 20px;
+        }
+        
+        .nav-tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+        }
+        
+        .nav-tab.active {
+            border-bottom-color: var(--primary);
+            font-weight: 600;
+        }
+        
+        #adminView {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Login Screen -->
+        <div id="loginScreen">
+            <h1>Aser's Bank</h1>
+            <div id="loginAlert" class="alert hidden"></div>
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" placeholder="Enter your email">
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" placeholder="Enter your password">
+            </div>
+            <button onclick="login()">Login</button>
+            <div style="text-align: center; margin-top: 20px;">
+                <a href="#" onclick="showScreen('registerScreen')">Create Account</a> | 
+                <a href="#" onclick="showScreen('resetPasswordScreen')">Forgot Password?</a>
+            </div>
+            <div style="margin-top: 30px; border-top: 1px solid #eee; padding-top: 20px;">
+                <button class="warning" onclick="showScreen('adminLoginScreen')">Admin Login</button>
+            </div>
+        </div>
+
+        <!-- Register Screen -->
+        <div id="registerScreen" class="hidden">
+            <h1>Create Account</h1>
+            <div id="registerAlert" class="alert hidden"></div>
+            <div class="form-group">
+                <label for="regName">Full Name</label>
+                <input type="text" id="regName" placeholder="Enter your full name">
+            </div>
+            <div class="form-group">
+                <label for="regEmail">Email</label>
+                <input type="email" id="regEmail" placeholder="Enter your email">
+            </div>
+            <div class="form-group">
+                <label for="regPassword">Password (min 8 characters)</label>
+                <input type="password" id="regPassword" placeholder="Create a password">
+            </div>
+            <div class="form-group">
+                <label for="securityQuestion">Security Question</label>
+                <select id="securityQuestion">
+                    <option value="What was your first pet's name?">What was your first pet's name?</option>
+                    <option value="What city were you born in?">What city were you born in?</option>
+                    <option value="What is your mother's maiden name?">What is your mother's maiden name?</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="securityAnswer">Security Answer</label>
+                <input type="text" id="securityAnswer" placeholder="Enter your answer">
+            </div>
+            <button class="success" onclick="register()">Create Account</button>
+            <button onclick="showScreen('loginScreen')">Back to Login</button>
+        </div>
+
+        <!-- Dashboard -->
+        <div id="dashboard" class="hidden">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h1>Welcome, <span id="userName"></span></h1>
+                <button class="danger" onclick="logout()" style="width: auto; padding: 8px 15px;">Logout</button>
+            </div>
+            
+            <div class="balance" id="balance">$0.00</div>
+            
+            <div class="nav-tabs">
+                <div class="nav-tab active" onclick="showTab('dashboardTab')">Dashboard</div>
+                <div class="nav-tab" onclick="showTab('transactionsTab')">Transactions</div>
+                <div class="nav-tab" onclick="showTab('transferTab')">Transfer</div>
+                <div class="nav-tab" onclick="showTab('settingsTab')">Settings</div>
+            </div>
+            
+            <!-- Dashboard Tab -->
+            <div id="dashboardTab">
+                <button onclick="showScreen('depositScreen')">Make Deposit</button>
+                <button onclick="showScreen('withdrawScreen')">Withdraw Funds</button>
+                <button onclick="showTab('transferTab')">Transfer Money</button>
+                
+                <h3 style="margin-top: 30px;">Recent Transactions</h3>
+                <div id="recentTransactions"></div>
+            </div>
+            
+            <!-- Transactions Tab -->
+            <div id="transactionsTab" class="hidden">
+                <div class="form-group">
+                    <label for="transactionFilter">Filter Transactions</label>
+                    <select id="transactionFilter" onchange="filterTransactions()">
+                        <option value="all">All Transactions</option>
+                        <option value="deposit">Deposits</option>
+                        <option value="withdraw">Withdrawals</option>
+                        <option value="transfer">Transfers</option>
+                    </select>
+                </div>
+                <div id="allTransactions"></div>
+            </div>
+            
+            <!-- Transfer Tab -->
+            <div id="transferTab" class="hidden">
+                <div class="form-group">
+                    <label for="recipientEmail">Recipient Email</label>
+                    <input type="email" id="recipientEmail" placeholder="Enter recipient's email">
+                </div>
+                <div class="form-group">
+                    <label for="transferAmount">Amount</label>
+                    <input type="number" id="transferAmount" placeholder="Enter amount">
+                </div>
+                <div class="form-group">
+                    <label for="transferNote">Note (Optional)</label>
+                    <input type="text" id="transferNote" placeholder="Add a note">
+                </div>
+                <button onclick="makeTransfer()">Transfer Money</button>
+                <div id="transferAlert" class="alert hidden"></div>
+            </div>
+            
+            <!-- Settings Tab -->
+            <div id="settingsTab" class="hidden">
+                <div style="background: #f8f9fa; padding: 20px; border-radius: 8px;">
+                    <h3>Account Settings</h3>
+                    <div id="accountDetails"></div>
+                    <button onclick="showScreen('changePasswordScreen')">Change Password</button>
+                    <button class="danger" onclick="showDeleteConfirmation()" style="margin-top: 10px;">Delete Account</button>
+                </div>
+                
+                <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-top: 20px;">
+                    <h3>Security</h3>
+                    <div id="twoFactorStatus"></div>
+                    <button id="twoFactorButton" style="margin-top: 10px;"></button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Deposit Screen -->
+        <div id="depositScreen" class="hidden">
+            <h1>Make Deposit</h1>
+            <div id="depositAlert" class="alert hidden"></div>
+            <div class="form-group">
+                <label for="depositAmount">Amount</label>
+                <input type="number" id="depositAmount" placeholder="Enter amount">
+            </div>
+            <div class="form-group">
+                <label for="depositMethod">Deposit Method</label>
+                <select id="depositMethod">
+                    <option value="bank">Bank Transfer</option>
+                    <option value="card">Credit/Debit Card</option>
+                    <option value="cash">Cash Deposit</option>
+                </select>
+            </div>
+            <button onclick="makeDeposit()">Deposit</button>
+            <button onclick="showScreen('dashboard')">Cancel</button>
+        </div>
+
+        <!-- Withdraw Screen -->
+        <div id="withdrawScreen" class="hidden">
+            <h1>Withdraw Funds</h1>
+            <div id="withdrawAlert" class="alert hidden"></div>
+            <div class="form-group">
+                <label for="withdrawAmount">Amount</label>
+                <input type="number" id="withdrawAmount" placeholder="Enter amount">
+            </div>
+            <div class="form-group">
+                <label for="withdrawMethod">Withdrawal Method</label>
+                <select id="withdrawMethod">
+                    <option value="bank">Bank Transfer</option>
+                    <option value="atm">ATM Withdrawal</option>
+                </select>
+            </div>
+            <button onclick="makeWithdraw()">Withdraw</button>
+            <button onclick="showScreen('dashboard')">Cancel</button>
+        </div>
+
+        <!-- Admin Login Screen -->
+        <div id="adminLoginScreen" class="hidden">
+            <h1>Admin Portal</h1>
+            <div id="adminLoginAlert" class="alert hidden"></div>
+            <div class="form-group">
+                <label for="adminPassword">Admin Password</label>
+                <input type="password" id="adminPassword" placeholder="Enter admin password">
+            </div>
+            <button onclick="adminLogin()">Login</button>
+            <button onclick="showScreen('loginScreen')">Back to User Login</button>
+        </div>
+
+        <!-- Admin Dashboard -->
+        <div id="adminDashboard" class="hidden">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h1>Admin Dashboard</h1>
+                <button class="danger" onclick="adminLogout()" style="width: auto; padding: 8px 15px;">Logout</button>
+            </div>
+            
+            <div class="nav-tabs">
+                <div class="nav-tab active" onclick="showAdminTab('usersTab')">Users</div>
+                <div class="nav-tab" onclick="showAdminTab('transactionsTab')">Transactions</div>
+                <div class="nav-tab" onclick="showAdminTab('settingsTab')">Settings</div>
+            </div>
+            
+            <!-- Users Tab -->
+            <div id="usersTab">
+                <div class="form-group">
+                    <label for="adminSearchUsers">Search Users</label>
+                    <input type="text" id="adminSearchUsers" placeholder="Search by name or email" oninput="searchUsers()">
+                </div>
+                <div id="usersList"></div>
+            </div>
+            
+            <!-- Transactions Tab -->
+            <div id="adminTransactionsTab" class="hidden">
+                <div class="form-group">
+                    <label for="adminFilterTransactions">Filter Transactions</label>
+                    <select id="adminFilterTransactions" onchange="filterAdminTransactions()">
+                        <option value="all">All Transactions</option>
+                        <option value="today">Today</option>
+                        <option value="large">Large (>$1000)</option>
+                    </select>
+                </div>
+                <div id="adminTransactionsList"></div>
+            </div>
+            
+            <!-- Settings Tab -->
+            <div id="adminSettingsTab" class="hidden">
+                <div style="background: #f8f9fa; padding: 20px; border-radius: 8px;">
+                    <h3>System Settings</h3>
+                    <div class="form-group">
+                        <label for="dailyLimit">Daily Transaction Limit</label>
+                        <input type="number" id="dailyLimit" value="5000">
+                    </div>
+                    <button onclick="saveSystemSettings()">Save Settings</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ======================
+        // DATA STORAGE
+        // ======================
+        let users = [
+            { 
+                id: 1,
+                name: "Test User", 
+                email: "test@user.com", 
+                password: "password123",
+                securityQuestion: "What was your first pet's name?",
+                securityAnswer: "Fluffy",
+                balance: 1000, 
+                transactions: [
+                    { id: 1, date: "2023-01-01T10:00:00", amount: 1000, type: "deposit", description: "Initial deposit" },
+                    { id: 2, date: "2023-01-05T14:30:00", amount: -200, type: "withdraw", description: "ATM withdrawal" }
+                ],
+                twoFactorEnabled: false
+            },
+            { 
+                id: 2,
+                name: "Admin User", 
+                email: "admin@bank.com", 
+                password: "admin123",
+                securityQuestion: "What city were you born in?",
+                securityAnswer: "New York",
+                balance: 0, 
+                transactions: [],
+                isAdmin: true,
+                twoFactorEnabled: true
+            }
+        ];
+        
+        const ADMIN_PASSWORD = "Aser2010";
+        let currentUser = null;
+        let verificationCode = "";
+        let pendingRegistration = null;
+
+        // ======================
+        // CORE FUNCTIONS
+        // ======================
+        function showScreen(id) {
+            document.querySelectorAll('.container > div').forEach(el => {
+                el.classList.add('hidden');
+            });
+            document.getElementById(id).classList.remove('hidden');
+            
+            if (id === 'dashboard') updateDashboard();
+            if (id === 'adminDashboard') updateAdminDashboard();
+        }
+
+        function showTab(id) {
+            document.querySelectorAll('#dashboard > div[id$="Tab"]').forEach(el => {
+                el.classList.add('hidden');
+            });
+            document.getElementById(id).classList.remove('hidden');
+            
+            // Update active tab
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            if (id === 'transactionsTab') showTransactions();
+            if (id === 'settingsTab') updateSettingsTab();
+        }
+
+        function showAdminTab(id) {
+            document.querySelectorAll('#adminDashboard > div[id$="Tab"]').forEach(el => {
+                el.classList.add('hidden');
+            });
+            document.getElementById(id).classList.remove('hidden');
+            
+            // Update active tab
+            document.querySelectorAll('#adminDashboard .nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+
+        function showAlert(elementId, message, type = 'danger') {
+            const alertEl = document.getElementById(elementId);
+            alertEl.textContent = message;
+            alertEl.className = `alert alert-${type}`;
+            alertEl.classList.remove('hidden');
+        }
+
+        // ======================
+        // AUTHENTICATION
+        // ======================
+        function login() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            const user = users.find(u => u.email === email && u.password === password);
+            
+            if (user) {
+                if (user.isAdmin) {
+                    showScreen('adminLoginScreen');
+                    return;
+                }
+                
+                currentUser = user;
+                showScreen('dashboard');
+            } else {
+                showAlert('loginAlert', 'Invalid email or password');
+            }
+        }
+
+        function register() {
+            const name = document.getElementById('regName').value;
+            const email = document.getElementById('regEmail').value;
+            const password = document.getElementById('regPassword').value;
+            const securityQuestion = document.getElementById('securityQuestion').value;
+            const securityAnswer = document.getElementById('securityAnswer').value;
+            
+            // Validation
+            if (!name || !email || !password || !securityAnswer) {
+                showAlert('registerAlert', 'All fields are required');
+                return;
+            }
+            
+            if (password.length < 8) {
+                showAlert('registerAlert', 'Password must be at least 8 characters');
+                return;
+            }
+            
+            if (users.some(u => u.email === email)) {
+                showAlert('registerAlert', 'Email already registered');
+                return;
+            }
+            
+            // Create user
+            const newUser = {
+                id: users.length + 1,
+                name,
+                email,
+                password,
+                securityQuestion,
+                securityAnswer,
+                balance: 0,
+                transactions: [],
+                twoFactorEnabled: false
+            };
+            
+            users.push(newUser);
+            currentUser = newUser;
+            showAlert('registerAlert', 'Account created successfully!', 'success');
+            setTimeout(() => showScreen('dashboard'), 1500);
+        }
+
+        function logout() {
+            currentUser = null;
+            showScreen('loginScreen');
+        }
+
+        function adminLogin() {
+            const password = document.getElementById('adminPassword').value;
+            
+            if (password === ADMIN_PASSWORD) {
+                currentUser = { isAdmin: true };
+                showScreen('adminDashboard');
+            } else {
+                showAlert('adminLoginAlert', 'Incorrect admin password');
+            }
+        }
+
+        function adminLogout() {
+            currentUser = null;
+            showScreen('loginScreen');
+        }
+
+        // ======================
+        // BANKING OPERATIONS
+        // ======================
+        function updateDashboard() {
+            document.getElementById('userName').textContent = currentUser.name;
+            document.getElementById('balance').textContent = currentUser.balance.toFixed(2);
+            
+            // Show recent transactions
+            const recentTransactions = currentUser.transactions
+                .sort((a, b) => new Date(b.date) - new Date(a.date))
+                .slice(0, 5);
+            
+            const transactionsHtml = recentTransactions.map(txn => `
+                <div class="transaction transaction-${txn.type}">
+                    <div>
+                        <strong>${new Date(txn.date).toLocaleDateString()}</strong><br>
+                        ${txn.description || txn.type}
+                    </div>
+                    <div style="font-weight: bold; color: ${txn.amount >= 0 ? 'green' : 'red'}">
+                        ${txn.amount >= 0 ? '+' : ''}$${Math.abs(txn.amount).toFixed(2)}
+                    </div>
+                </div>
+            `).join('');
+            
+            document.getElementById('recentTransactions').innerHTML = transactionsHtml || '<p>No recent transactions</p>';
+        }
+
+        function showTransactions() {
+            const filter = document.getElementById('transactionFilter').value;
+            let transactions = [...currentUser.transactions];
+            
+            if (filter !== 'all') {
+                transactions = transactions.filter(txn => txn.type === filter);
+            }
+            
+            transactions.sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            const transactionsHtml = transactions.map(txn => `
+                <div class="transaction transaction-${txn.type}">
+                    <div>
+                        <strong>${new Date(txn.date).toLocaleString()}</strong><br>
+                        ${txn.description || txn.type}
+                    </div>
+                    <div style="font-weight: bold; color: ${txn.amount >= 0 ? 'green' : 'red'}">
+                        ${txn.amount >= 0 ? '+' : ''}$${Math.abs(txn.amount).toFixed(2)}
+                    </div>
+                </div>
+            `).join('');
+            
+            document.getElementById('allTransactions').innerHTML = transactionsHtml || '<p>No transactions found</p>';
+        }
+
+        function makeDeposit() {
+            const amount = parseFloat(document.getElementById('depositAmount').value);
+            const method = document.getElementById('depositMethod').value;
+            
+            if (isNaN(amount) || amount <= 0) {
+                showAlert('depositAlert', 'Invalid amount');
+                return;
+            }
+            
+            currentUser.balance += amount;
+            currentUser.transactions.push({
+                id: currentUser.transactions.length + 1,
+                date: new Date().toISOString(),
+                amount: amount,
+                type: "deposit",
+                description: `Deposit via ${method}`
+            });
+            
+            updateDashboard();
+            document.getElementById('depositAmount').value = "";
+            showAlert('depositAlert', `Deposited $${amount.toFixed(2)} successfully!`, 'success');
+            setTimeout(() => showScreen('dashboard'), 1500);
+        }
+
+        function makeWithdraw() {
+            const amount = parseFloat(document.getElementById('withdrawAmount').value);
+            const method = document.getElementById('withdrawMethod').value;
+            
+            if (isNaN(amount) || amount <= 0) {
+                showAlert('withdrawAlert', 'Invalid amount');
+                return;
+            }
+            
+            if (amount > currentUser.balance) {
+                showAlert('withdrawAlert', 'Insufficient funds');
+                return;
+            }
+            
+            currentUser.balance -= amount;
+            currentUser.transactions.push({
+                id: currentUser.transactions.length + 1,
+                date: new Date().toISOString(),
+                amount: -amount,
+                type: "withdraw",
+                description: `Withdrawal via ${method}`
+            });
+            
+            updateDashboard();
+            document.getElementById('withdrawAmount').value = "";
+            showAlert('withdrawAlert', `Withdrew $${amount.toFixed(2)} successfully!`, 'success');
+            setTimeout(() => showScreen('dashboard'), 1500);
+        }
+
+        function makeTransfer() {
+            const recipientEmail = document.getElementById('recipientEmail').value;
+            const amount = parseFloat(document.getElementById('transferAmount').value);
+            const note = document.getElementById('transferNote').value;
+            
+            if (isNaN(amount) || amount <= 0) {
+                showAlert('transferAlert', 'Invalid amount');
+                return;
+            }
+            
+            if (amount > currentUser.balance) {
+                showAlert('transferAlert', 'Insufficient funds');
+                return;
+            }
+            
+            const recipient = users.find(u => u.email === recipientEmail);
+            if (!recipient) {
+                showAlert('transferAlert', 'Recipient not found');
+                return;
+            }
+            
+            if (recipient.email === currentUser.email) {
+                showAlert('transferAlert', 'Cannot transfer to yourself');
+                return;
+            }
+            
+            // Process transfer
+            currentUser.balance -= amount;
+            recipient.balance += amount;
+            
+            const transferDesc = note ? `Transfer to ${recipient.name}: ${note}` : `Transfer to ${recipient.name}`;
+            const receiveDesc = note ? `Transfer from ${currentUser.name}: ${note}` : `Transfer from ${currentUser.name}`;
+            
+            currentUser.transactions.push({
+                id: currentUser.transactions.length + 1,
+                date: new Date().toISOString(),
+                amount: -amount,
+                type: "transfer",
+                description: transferDesc
+            });
+            
+            recipient.transactions.push({
+                id: recipient.transactions.length + 1,
+                date: new Date().toISOString(),
+                amount: amount,
+                type: "transfer",
+                description: receiveDesc
+            });
+            
+            updateDashboard();
+            document.getElementById('recipientEmail').value = "";
+            document.getElementById('transferAmount').value = "";
+            document.getElementById('transferNote').value = "";
+            showAlert('transferAlert', `Transferred $${amount.toFixed(2)} to ${recipient.name}`, 'success');
+        }
+
+        // ======================
+        // ADMIN FUNCTIONS
+        // ======================
+        function updateAdminDashboard() {
+            // List all users
+            const searchTerm = document.getElementById('adminSearchUsers').value.toLowerCase();
+            let filteredUsers = users.filter(u => !u.isAdmin);
+            
+            if (searchTerm) {
+                filteredUsers = filteredUsers.filter(u => 
+                    u.name.toLowerCase().includes(searchTerm) || 
+                    u.email.toLowerCase().includes(searchTerm)
+                );
+            }
+            
+            const usersHtml = filteredUsers.map(user => `
+                <div style="background: white; padding: 15px; border-radius: 8px; margin-bottom: 10px;">
+                    <h4>${user.name}</h4>
+                    <p>Email: ${user.email}</p>
+                    <p>Balance: $${user.balance.toFixed(2)}</p>
+                    <button onclick="viewUserDetails(${user.id})" style="width: auto; margin-top: 10px;">View Details</button>
+                </div>
+            `).join('');
+            
+            document.getElementById('usersList').innerHTML = usersHtml || '<p>No users found</p>';
+        }
+
+        function viewUserDetails(userId) {
+            const user = users.find(u => u.id === userId);
+            alert(`User Details:\nName: ${user.name}\nEmail: ${user.email}\nBalance: $${user.balance.toFixed(2)}`);
+        }
+
+        function saveSystemSettings() {
+            const dailyLimit = document.getElementById('dailyLimit').value;
+            alert(`System settings saved!\nDaily limit set to $${dailyLimit}`);
+        }
+
+        // ======================
+        // INITIALIZATION
+        // ======================
+        function init() {
+            showScreen('loginScreen');
+        }
+
+        // Start the application
+        init();
+    </script>
+</body>
+</html>
